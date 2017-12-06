@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask, jsonify, abort, request, make_response, url_for
-from flask.ext.httpauth import HTTPBasicAuth
+from flask_httpauth import HTTPBasicAuth
+
 
 app = Flask(__name__, static_url_path = "")
 auth = HTTPBasicAuth()
@@ -26,45 +27,54 @@ def not_found(error):
 def not_found(error):
     return make_response(jsonify( { 'error': 'Not found' } ), 404)
 
-tasks = [
+rsvps = [
     {
         'id': 1,
-        'title': u'Buy groceries',
-        'description': u'Milk, Cheese, Pizza, Fruit, Tylenol', 
-        'done': False
-    },
+        'nome': u'Vagner Clementino dos Santos',
+        'email': u'vagner.clementino@gmail.com',
+        'evento': u'Cerimônia e Recepção',
+        'acompanhante': u'1 Acompanhante',
+        'observacao': u'Não se aplica'
+        },
     {
         'id': 2,
-        'title': u'Learn Python',
-        'description': u'Need to find a good Python tutorial on the web', 
-        'done': False
-    }
+        'nome': u'Andreza Vieira Lelis da Silva',
+        'email': u'a.vieiralelis@gmail.com',
+        'evento': u'Cerimônia e Recepção',
+        'acompanhante': u'1 Acompanhante',
+        'observacao': u'Não se aplica'
+        }
 ]
 
-def make_public_task(task):
-    new_task = {}
-    for field in task:
+def make_public_rsvp(rsvp):
+    new_rsvp = {}
+    for field in rsvp:
         if field == 'id':
-            new_task['uri'] = url_for('get_task', task_id = task['id'], _external = True)
+            new_rsvp['uri'] = url_for('get_rsvp',
+                                      rsvp_id = rsvp['id'],
+                                      _external = True
+                                      )
         else:
-            new_task[field] = task[field]
-    return new_task
-    
-@app.route('/todo/api/v1.0/tasks', methods = ['GET'])
-@auth.login_required
-def get_tasks():
-    return jsonify( { 'tasks': map(make_public_task, tasks) } )
+            new_rsvp[field] = rsvp[field]
+    return new_rsvp
 
-@app.route('/todo/api/v1.0/tasks/<int:task_id>', methods = ['GET'])
-@auth.login_required
-def get_task(task_id):
-    task = filter(lambda t: t['id'] == task_id, tasks)
-    if len(task) == 0:
+@app.route('/rsvp/api/v1.0/rsvps', methods = ['GET'])
+# @auth.login_required
+def get_rsvps():
+
+    json_response = jsonify( { 'rsvps': list(map(make_public_rsvp, rsvps)) })
+    return make_response(json_response)
+
+@app.route('/rsvp/api/v1.0/rsvps/<int:rsvp_id>', methods = ['GET'])
+# @auth.login_required
+def get_rsvp(rsvp_id):
+    rsvp = filter(lambda t: t['id'] == rsvp_id, rsvps)
+    if len(rsvp) == 0:
         abort(404)
-    return jsonify( { 'task': make_public_task(task[0]) } )
+    return jsonify( { 'rsvp': make_public_task(rsvp[0]) } )
 
-@app.route('/todo/api/v1.0/tasks', methods = ['POST'])
-@auth.login_required
+@app.route('/rsvp/api/v1.0/tasks', methods = ['POST'])
+    # @auth.login_required
 def create_task():
     if not request.json or not 'title' in request.json:
         abort(400)
@@ -77,8 +87,8 @@ def create_task():
     tasks.append(task)
     return jsonify( { 'task': make_public_task(task) } ), 201
 
-@app.route('/todo/api/v1.0/tasks/<int:task_id>', methods = ['PUT'])
-@auth.login_required
+@app.route('/rsvp/api/v1.0/rsvps/<int:task_id>', methods = ['PUT'])
+# @auth.login_required
 def update_task(task_id):
     task = filter(lambda t: t['id'] == task_id, tasks)
     if len(task) == 0:
@@ -95,9 +105,9 @@ def update_task(task_id):
     task[0]['description'] = request.json.get('description', task[0]['description'])
     task[0]['done'] = request.json.get('done', task[0]['done'])
     return jsonify( { 'task': make_public_task(task[0]) } )
-    
-@app.route('/todo/api/v1.0/tasks/<int:task_id>', methods = ['DELETE'])
-@auth.login_required
+
+@app.route('/rsvp/api/v1.0/tasks/<int:task_id>', methods = ['DELETE'])
+# @auth.login_required
 def delete_task(task_id):
     task = filter(lambda t: t['id'] == task_id, tasks)
     if len(task) == 0:
