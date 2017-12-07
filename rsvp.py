@@ -68,24 +68,26 @@ def get_rsvps():
 @app.route('/rsvp/api/v1.0/rsvps/<int:rsvp_id>', methods = ['GET'])
 # @auth.login_required
 def get_rsvp(rsvp_id):
-    rsvp = filter(lambda t: t['id'] == rsvp_id, rsvps)
+    rsvp = list(filter(lambda t: t['id'] == rsvp_id, rsvps))
     if len(rsvp) == 0:
         abort(404)
-    return jsonify( { 'rsvp': make_public_task(rsvp[0]) } )
+    return jsonify( { 'rsvp': make_public_rsvp(rsvp[0]) } )
 
-@app.route('/rsvp/api/v1.0/tasks', methods = ['POST'])
+@app.route('/rsvp/api/v1.0/rsvps', methods = ['POST'])
     # @auth.login_required
-def create_task():
-    if not request.json or not 'title' in request.json:
+def create_rsvp():
+    if not request.json or not 'nome' in request.json:
         abort(400)
-    task = {
-        'id': tasks[-1]['id'] + 1,
-        'title': request.json['title'],
-        'description': request.json.get('description', ""),
-        'done': False
+    rsvp = {
+        'id': rsvps[-1]['id'] + 1,
+        'acompanhante': request.json['acompanhante'],
+        'email': request.json['email'],
+        'evento': request.json['evento'],
+        'nome': request.json['nome'],
+        'observacao': request.json.get('observacao', None)
     }
-    tasks.append(task)
-    return jsonify( { 'task': make_public_task(task) } ), 201
+    rsvps.append(rsvp)
+    return jsonify( { 'rsvp': make_public_rsvp(rsvp) } ), 201
 
 @app.route('/rsvp/api/v1.0/rsvps/<int:task_id>', methods = ['PUT'])
 # @auth.login_required
