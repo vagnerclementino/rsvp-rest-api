@@ -76,18 +76,18 @@ def get_rsvp(rsvp_id):
 @app.route('/rsvp/api/v1.0/rsvps', methods = ['POST'])
     # @auth.login_required
 def create_rsvp():
-    if not request.json or not 'nome' in request.json:
-        abort(400)
+    if not request.form or 'nome' not in request.form:
+         abort(400)
     rsvp = {
         'id': rsvps[-1]['id'] + 1,
-        'acompanhante': request.json['acompanhante'],
-        'email': request.json['email'],
-        'evento': request.json['evento'],
-        'nome': request.json['nome'],
-        'observacao': request.json.get('observacao', None)
+        'acompanhante': request.form['acompanhante'],
+        'email': request.form['email'],
+        'evento': request.form['evento'],
+        'nome': str(request.form['nome']),
+        'observacao': request.form.get('observacao', None)
     }
     rsvps.append(rsvp)
-    return jsonify( { 'rsvp': make_public_rsvp(rsvp) } ), 201
+    return jsonify({'rsvp': make_public_rsvp(rsvp) } ), 201
 
 @app.route('/rsvp/api/v1.0/rsvps/<int:task_id>', methods = ['PUT'])
 # @auth.login_required
