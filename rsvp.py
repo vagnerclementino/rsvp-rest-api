@@ -3,10 +3,16 @@
 
 from flask import Flask, jsonify, abort, request, make_response, url_for
 from flask_httpauth import HTTPBasicAuth
+from flask.ext.sqlalchemy import SQLAlchemy
+import os
 
 
 app = Flask(__name__, static_url_path = "")
 auth = HTTPBasicAuth()
+app.config.from_object(os.environ['APP_SETTINGS'])
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+db = SQLAlchemy(app)
+
 
 @auth.get_password
 def get_password(username):
@@ -17,7 +23,8 @@ def get_password(username):
 @auth.error_handler
 def unauthorized():
     return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
-    # return 403 instead of 401 to prevent browsers from displaying the default auth dialog
+    # return 403 instead of 401 to prevent browsers from displaying [
+    # the default auth dialog
 
 @app.errorhandler(400)
 def not_found(error):
