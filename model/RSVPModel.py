@@ -1,19 +1,23 @@
-from app import db
-from sqlalchemy.dialects.postgresql import JSON
+from rsvp import db
 
 
 class RSVPModel(db.Model):
-    __tablename__ = 'rsvps'
+    __tablename__ = 'confirmacao_presenca'
+    __table_args__ = {"schema":"rsvp"}
 
-    id = db.Column(db.Integer, primary_key=True)
-    url = db.Column(db.String())
-    result_all = db.Column(JSON)
-    result_no_stop_words = db.Column(JSON)
+    id_confirmacao_presenca = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String())
+    email = db.Column(db.String())
+    evento= db.Column(db.String())
+    acompanhante = db.Column(db.String())
+    observacao = db.Column(db.String())
 
-    def __(self, url, result_all, result_no_stop_words):
-        self.url = url
-        self.result_all = result_all
-        self.result_no_stop_words = result_no_stop_words
+    def __init__(self, nome, email, evento, acompanhante, observacao):
+        self.nome = nome
+        self.email = email
+        self.evento = evento
+        self.acompanhante = acompanhante
+        self.observacao = observacao
 
     def __repr__(self):
-        return '<id {}>'.format(self.id)
+        return '<nome: {}>'.format(self.nome)

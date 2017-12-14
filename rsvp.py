@@ -4,15 +4,16 @@
 from flask import Flask, jsonify, abort, request, make_response, url_for
 from flask_httpauth import HTTPBasicAuth
 from flask.ext.sqlalchemy import SQLAlchemy
+import model.RSVPModel
 import os
-
+import config
 
 app = Flask(__name__, static_url_path = "")
 auth = HTTPBasicAuth()
-app.config.from_object(os.environ['APP_SETTINGS'])
+app.config.from_object(config.DevelopmentConfig)
+# app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
-
 
 @auth.get_password
 def get_password(username):
@@ -85,6 +86,12 @@ def get_rsvp(rsvp_id):
 def create_rsvp():
     if not request.form or 'nome' not in request.form:
          abort(400)
+
+    acompanhante = request.form['acompanhante'],
+    email =  request.form['email'],
+    evento =  request.form['evento'],
+    nome =  str(request.form['nome']),
+    observacao = request.form.get('observacao', None)
     rsvp = {
         'id': rsvps[-1]['id'] + 1,
         'acompanhante': request.form['acompanhante'],
@@ -94,6 +101,14 @@ def create_rsvp():
         'observacao': request.form.get('observacao', None)
     }
     rsvps.append(rsvp)
+    rsvp_model = model.RSVPModel.RSVPModel(nome=nome,
+                           email = email,
+                           evento = evento,
+                           acompanhante = acompanhante,
+                           observacao = observacao)
+    print(rsvp_model)
+    db.session.add(rsvp_model)
+    db.session.commit()
     return jsonify({'rsvp': make_public_rsvp(rsvp) } ), 201
 
 @app.route('/rsvp/api/v1.0/rsvps/<int:task_id>', methods = ['PUT'])
@@ -126,4 +141,4 @@ def delete_task(task_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=app.config['DEBUG'])
