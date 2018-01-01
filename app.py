@@ -5,11 +5,10 @@ from flask import Flask, jsonify, abort, request, make_response, url_for
 from flask_httpauth import HTTPBasicAuth
 from flask_sqlalchemy import SQLAlchemy
 import config
-import model.RSVPModel
 
 app = Flask(__name__, static_url_path="")
 auth = HTTPBasicAuth()
-app.config.from_object(config.DevelopmentConfig)
+app.config.from_object(config.ProductionConfig)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 
@@ -84,9 +83,10 @@ def get_rsvp(rsvp_id):
 @app.route('/rsvp/api/v1.0/rsvps', methods = ['POST'])
     # @auth.login_required
 def create_rsvp():
+    from model.RSVPModel import RSVPModel
     if not request.form or 'nome' not in request.form:
          abort(400)
-
+  
     acompanhante = request.form['acompanhante'],
     email =  request.form['email'],
     evento =  request.form['evento'],
@@ -101,7 +101,7 @@ def create_rsvp():
         'observacao': request.form.get('observacao', None)
     }
     rsvps.append(rsvp)
-    rsvp_model = model.RSVPModel.RSVPModel(nome=nome,
+    rsvp_model = RSVPModel(nome=nome,
                            email = email,
                            evento = evento,
                            acompanhante = acompanhante,
