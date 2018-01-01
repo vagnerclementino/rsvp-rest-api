@@ -9,7 +9,7 @@ import model.RSVPModel
 
 app = Flask(__name__, static_url_path="")
 auth = HTTPBasicAuth()
-app.config.from_object(config.DevelopmentConfig)
+app.config.from_object(config.ProductionConfig)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 
