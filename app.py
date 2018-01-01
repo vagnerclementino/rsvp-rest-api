@@ -86,7 +86,7 @@ def create_rsvp():
     from model.RSVPModel import RSVPModel
     if not request.form or 'nome' not in request.form:
          abort(400)
-  
+
     acompanhante = request.form['acompanhante'],
     email =  request.form['email'],
     evento =  request.form['evento'],
