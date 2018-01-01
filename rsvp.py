@@ -3,23 +3,23 @@
 
 from flask import Flask, jsonify, abort, request, make_response, url_for
 from flask_httpauth import HTTPBasicAuth
-from flask.ext.sqlalchemy import SQLAlchemy
-import model.RSVPModel
-import os
+from flask_sqlalchemy import SQLAlchemy
 import config
+import model.RSVPModel
 
-app = Flask(__name__, static_url_path = "")
+app = Flask(__name__, static_url_path="")
 auth = HTTPBasicAuth()
 app.config.from_object(config.DevelopmentConfig)
-# app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
+
 
 @auth.get_password
 def get_password(username):
     if username == 'miguel':
         return 'python'
     return None
+
 
 @auth.error_handler
 def unauthorized():
