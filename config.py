@@ -10,7 +10,7 @@ class Config(object):
 
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = ''
+    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
 
 
 class StagingConfig(Config):
